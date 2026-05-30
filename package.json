@@ -1,0 +1,45 @@
+{
+  "name": "self-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "build:export": "BUILD_EXPORT=true next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@tiptap/core": "^2.10.0",
+    "@tiptap/extension-image": "^2.10.0",
+    "@tiptap/extension-link": "^2.10.0",
+    "@tiptap/extension-placeholder": "^2.10.0",
+    "@tiptap/pm": "^2.10.0",
+    "@tiptap/react": "^2.10.0",
+    "@tiptap/starter-kit": "^2.10.0",
+    "bcryptjs": "^2.4.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "echarts": "^5.5.1",
+    "echarts-for-react": "^3.0.2",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.2",
+    "lucide-react": "^0.460.0",
+    "next": "15.1.7",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "tailwind-merge": "^2.5.5",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^22.10.1",
+    "@types/react": "19.0.10",
+    "@types/react-dom": "19.0.4",
+    "eslint": "^9.17.0",
+    "eslint-config-next": "15.1.7",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.2"
+  }
+}

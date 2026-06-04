@@ -28,7 +28,7 @@ export function KnowledgeGraph({ notes, categories, relations }: KnowledgeGraphP
 
   const option = {
     tooltip: {
-      formatter: (params: any) => {
+      formatter: (params: { dataType: string; data: { id?: string; name?: string; source?: string; target?: string } }) => {
         if (params.dataType === 'node') {
           const note = notes.find(n => n.id === params.data.id);
           return `<strong>${params.data.name}</strong><br/>分类: ${getCategory(note?.categoryId || '')?.name || '未知'}`;

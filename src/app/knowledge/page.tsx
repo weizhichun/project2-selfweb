@@ -7,8 +7,6 @@ import { NoteManager } from '@/components/knowledge/NoteManager';
 import { KnowledgeGraph } from '@/components/knowledge/KnowledgeGraph';
 import { ImportExport } from '@/components/knowledge/ImportExport';
 import { Search } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { Note } from '@/types/knowledge';
 
 export default function KnowledgePage() {
   const {
@@ -23,10 +21,6 @@ export default function KnowledgePage() {
     addNote,
     updateNote,
     deleteNote,
-    addTag,
-    deleteTag,
-    addRelation,
-    deleteRelation,
     exportData,
     importData,
     searchNotes,

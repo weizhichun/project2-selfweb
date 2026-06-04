@@ -2,25 +2,24 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useProfile } from "@/hooks/use-profile";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { User, Save, RotateCcw, Upload, Trash2, Check, AlertCircle } from "lucide-react";
+import { User, Save, RotateCcw, Trash2, AlertCircle, Plus } from "lucide-react";
 import { Profile as ProfileType } from "@/types";
 import { useAuth } from "@/hooks/use-auth";
 import { LoginModal } from "@/components/auth/LoginModal";
 import { SetPasswordModal } from "@/components/auth/SetPasswordModal";
-import { useRouter } from "next/navigation";
-import { useConfirm, ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { useConfirm } from "@/components/ui/confirm-dialog";
 import { useToast } from "@/hooks/use-toast";
+import { AvatarUploader } from "@/components/AvatarUploader";
 
 export default function ProfileEditPage() {
-  const { profile, isLoading, updateProfile, resetToDefault } = useProfile();
+  const { profile, isLoading, updateProfile, resetToDefault, refreshProfile } = useProfile();
   const { isAuthenticated, hasPassword, isLoading: isAuthLoading } = useAuth();
   const { addToast } = useToast();
-  const router = useRouter();
-  const { confirm, ConfirmDialog: ResetConfirmDialog } = useConfirm();
+  const { confirm } = useConfirm();
   
   const [formData, setFormData] = useState<Partial<ProfileType> | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -28,7 +27,7 @@ export default function ProfileEditPage() {
 
   useEffect(() => {
     if (profile) {
-      setFormData(profile);
+      setFormData({ ...profile });
     }
   }, [profile]);
 
@@ -60,6 +59,12 @@ export default function ProfileEditPage() {
     setIsSaving(true);
     try {
       await updateProfile(formData);
+      await refreshProfile();
+      addToast({
+        type: "success",
+        title: "保存成功",
+        description: "个人信息已更新",
+      });
     } catch (error) {
       addToast({
         type: "destructive",
@@ -69,93 +74,6 @@ export default function ProfileEditPage() {
     } finally {
       setIsSaving(false);
     }
-  };
-
-  // 头像上传处理
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // 检查文件大小
-    if (file.size > 5 * 1024 * 1024) {
-      addToast({
-        type: "destructive",
-        title: "文件过大",
-        description: "头像文件大小不能超过 5MB",
-      });
-      return;
-    }
-
-    // 检查文件类型
-    if (!file.type.startsWith("image/")) {
-      addToast({
-        type: "destructive",
-        title: "文件类型错误",
-        description: "请上传图片文件",
-      });
-      return;
-    }
-
-    try {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement("canvas");
-          const maxWidth = 400;
-          const maxHeight = 400;
-          
-          let width = img.width;
-          let height = img.height;
-          
-          if (width > height) {
-            if (width > maxWidth) {
-              height *= maxWidth / width;
-              width = maxWidth;
-            }
-          } else {
-            if (height > maxHeight) {
-              width *= maxHeight / height;
-              height = maxHeight;
-            }
-          }
-          
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-          if (ctx) {
-            ctx.drawImage(img, 0, 0, width, height);
-            const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.8);
-            
-            setFormData({ ...formData!, avatar: compressedDataUrl });
-            addToast({
-              type: "success",
-              title: "头像上传成功",
-              description: "头像已更新，点击保存后生效",
-            });
-          }
-        };
-        img.src = e.target?.result as string;
-      };
-      reader.onerror = () => {
-        addToast({
-          type: "destructive",
-          title: "头像上传失败",
-          description: "无法读取图片文件，请重试",
-        });
-      };
-      reader.readAsDataURL(file);
-    } catch (error) {
-      addToast({
-        type: "destructive",
-        title: "头像上传失败",
-        description: error instanceof Error ? error.message : "上传过程出错，请重试",
-      });
-    }
-  };
-
-  const handleResetAvatar = () => {
-    setFormData({ ...formData!, avatar: "" });
   };
 
   const handleReset = async () => {
@@ -169,6 +87,12 @@ export default function ProfileEditPage() {
     if (confirmed) {
       try {
         await resetToDefault();
+        await refreshProfile();
+        addToast({
+          type: "success",
+          title: "重置成功",
+          description: "个人信息已恢复为默认数据",
+        });
       } catch (error) {
         addToast({
           type: "destructive",
@@ -224,40 +148,11 @@ export default function ProfileEditPage() {
             <CardDescription>上传或修改个人头像</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-8">
-              <div className="relative">
-                {formData.avatar ? (
-                  <img
-                    src={formData.avatar}
-                    alt="头像"
-                    className="w-32 h-32 rounded-full object-cover border-4 border-blue-100"
-                  />
-                ) : (
-                  <div className="w-32 h-32 rounded-full bg-gray-100 flex items-center justify-center border-4 border-blue-100">
-                    <User className="w-16 h-16 text-gray-400" />
-                  </div>
-                )}
-              </div>
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="avatar-upload" className="cursor-pointer">
-                  <Button variant="default" size="sm" className="flex items-center gap-2">
-                    <Upload className="h-4 w-4" />
-                    上传头像
-                  </Button>
-                </Label>
-                <Input
-                  id="avatar-upload"
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleAvatarUpload}
-                />
-                {formData.avatar && (
-                  <Button variant="outline" size="sm" onClick={handleResetAvatar}>
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    重置头像
-                  </Button>
-                )}
+            <div className="flex flex-col md:flex-row items-center gap-8">
+              <AvatarUploader size="xl" showUploadButton />
+              <div className="text-sm text-muted-foreground">
+                <p>支持 JPG、JPEG、PNG 格式</p>
+                <p>建议尺寸：256×256 像素</p>
               </div>
             </div>
           </CardContent>
@@ -495,7 +390,8 @@ export default function ProfileEditPage() {
                 });
               }}
             >
-              + 添加技能大类
+              <Plus className="h-4 w-4 mr-2" />
+              添加技能大类
             </Button>
           </CardContent>
         </Card>
@@ -503,15 +399,16 @@ export default function ProfileEditPage() {
         {/* 操作按钮 */}
         <Card>
           <CardContent className="pt-6">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
               <Button
                 variant="destructive"
                 onClick={handleReset}
+                className="w-full sm:w-auto"
               >
                 <RotateCcw className="mr-2 h-4 w-4" />
                 重置为默认数据
               </Button>
-              <Button onClick={handleSave} disabled={isSaving}>
+              <Button onClick={handleSave} disabled={isSaving} className="w-full sm:w-auto">
                 {isSaving ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -529,7 +426,6 @@ export default function ProfileEditPage() {
         </Card>
       </div>
 
-      <ResetConfirmDialog />
     </div>
   );
 }

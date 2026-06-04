@@ -5,7 +5,7 @@ import { PasswordSettings } from "@/components/auth/PasswordSettings";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { User, Lock, RotateCcw, GraduationCap } from "lucide-react";
+import { User, Lock, GraduationCap, FolderOpen } from "lucide-react";
 
 export default function SettingsPage() {
   return (
@@ -60,6 +60,32 @@ export default function SettingsPage() {
                 <Link href="/settings/experience">
                   <Button variant="default" size="sm">
                     管理经历
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FolderOpen className="h-4 w-4" />
+                项目管理
+              </CardTitle>
+              <CardDescription>
+                管理您的项目作品集
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-xs text-muted-foreground">
+                    添加、编辑和删除项目
+                  </p>
+                </div>
+                <Link href="/settings/projects">
+                  <Button variant="default" size="sm">
+                    管理项目
                   </Button>
                 </Link>
               </div>

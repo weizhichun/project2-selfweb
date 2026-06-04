@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useProfile } from "@/hooks/use-profile";
 import {
-  Github,
   Mail,
   Phone,
   ExternalLink,
@@ -18,7 +17,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useTheme } from "@/hooks/use-theme";
-import { useRouter } from "next/navigation";
+
 
 // 动态导入图表组件，避免阻塞首屏加载
 const ReactECharts = dynamic(() => import("echarts-for-react"), {
@@ -94,7 +93,6 @@ function RadarChart({ radarSkills, radarValues }: RadarChartProps) {
 
 export default function Home() {
   const { profile, isLoading } = useProfile();
-  const router = useRouter();
 
   if (isLoading || !profile) {
     return (
@@ -106,10 +104,6 @@ export default function Home() {
       </div>
     );
   }
-
-  const handleAvatarClick = () => {
-    router.push("/settings/profile");
-  };
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText(profile.email);

@@ -1,7 +1,6 @@
 import {
   AIConfig,
   ChatMessage,
-  ChatCompletionRequest,
   ChatCompletionResponse,
   NoteAssistantRequest,
   ResumeOptimizeRequest,
@@ -19,14 +18,14 @@ class AIService {
   private async buildRequest(messages: ChatMessage[], options?: { temperature?: number; maxTokens?: number }) {
     const { provider, endpoint, apiKey, model } = this.config;
     
-    let requestBody: any = {
+    const requestBody: Record<string, unknown> = {
       model,
       messages,
       temperature: options?.temperature ?? 0.7,
       max_tokens: options?.maxTokens ?? 2000
     };
 
-    let headers: Record<string, string> = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json'
     };
 
@@ -195,7 +194,7 @@ ${knowledgeContext}`;
         return JSON.parse(jsonMatch[0]);
       }
       return JSON.parse(response);
-    } catch (e) {
+    } catch {
       throw new Error('解析面试问题失败');
     }
   }
@@ -235,7 +234,7 @@ ${knowledgeContext}`;
         return JSON.parse(jsonMatch[0]);
       }
       return JSON.parse(response);
-    } catch (e) {
+    } catch {
       throw new Error('解析面试反馈失败');
     }
   }

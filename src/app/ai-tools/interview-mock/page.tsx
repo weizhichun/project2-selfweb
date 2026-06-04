@@ -6,7 +6,7 @@ import AIService from '@/lib/ai-service';
 import { InterviewQuestion, InterviewFeedback } from '@/types/ai';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { UserCheck, Sparkles, ArrowLeft, CheckCircle2, XCircle } from 'lucide-react';
+import { UserCheck, Sparkles, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function InterviewMockPage() {

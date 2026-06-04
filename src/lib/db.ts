@@ -390,7 +390,7 @@ class KnowledgeDB {
         exportTime: Date.now(),
         version: "2.0.0",
       };
-    } catch (error) {
+    } catch {
       throw new Error("导出数据失败，请重试。");
     }
   }

@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { profileData } from "@/data/profile";
+import { useProfile } from "@/hooks/use-profile";
 import { Project } from "@/types";
 import {
   Github,
@@ -11,17 +11,34 @@ import {
   Eye,
   EyeOff,
   ChevronLeft,
+  Plus,
+  FolderOpen,
 } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 
 export default function ProjectsPage() {
+  const { profile, isLoading } = useProfile();
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showAll, setShowAll] = useState(false);
 
+  if (isLoading) {
+    return (
+      <div className="container py-12">
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-muted-foreground">加载中...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const projects = profile?.projects || [];
   const displayedProjects = showAll
-    ? profileData.projects
-    : profileData.projects.filter((p) => p.isPublic);
+    ? projects
+    : projects.filter((p) => p.isPublic);
 
   if (selectedProject) {
     return (
@@ -100,72 +117,99 @@ export default function ProjectsPage() {
   return (
     <div className="container py-12">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">项目展示</h1>
-        <Button variant="outline" onClick={() => setShowAll(!showAll)}>
-          {showAll ? (
-            <>
-              <Eye className="mr-2 h-4 w-4" />
-              只看公开
-            </>
-          ) : (
-            <>
-              <EyeOff className="mr-2 h-4 w-4" />
-              显示全部
-            </>
-          )}
-        </Button>
+        <div>
+          <h1 className="text-3xl font-bold">项目展示</h1>
+          <p className="text-muted-foreground mt-1">
+            共 {projects.length} 个项目
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setShowAll(!showAll)}>
+            {showAll ? (
+              <>
+                <Eye className="mr-2 h-4 w-4" />
+                只看公开
+              </>
+            ) : (
+              <>
+                <EyeOff className="mr-2 h-4 w-4" />
+                显示全部
+              </>
+            )}
+          </Button>
+          <Link href="/settings/projects">
+            <Button>
+              <FolderOpen className="mr-2 h-4 w-4" />
+              管理项目
+            </Button>
+          </Link>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {displayedProjects.map((project) => (
-          <Card
-            key={project.id}
-            className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => setSelectedProject(project)}
-          >
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <CardTitle className="text-xl">{project.title}</CardTitle>
-                {!project.isPublic && (
-                  <Badge variant="outline" className="flex items-center gap-1">
-                    <EyeOff className="h-3 w-3" />
-                    私密
-                  </Badge>
-                )}
-              </div>
-              <p className="text-sm text-muted-foreground">{project.period}</p>
-            </CardHeader>
-            <CardContent>
-              <p className="mb-4 line-clamp-3">{project.description}</p>
-              <div className="flex flex-wrap gap-2">
-                {project.tags.map((tag) => (
-                  <Badge key={tag} variant="outline" className="text-xs">
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-              <div className="flex gap-2 mt-4">
-                {project.githubUrl && (
-                  <Button variant="ghost" size="sm" className="h-8 px-2">
-                    <Github className="h-4 w-4 mr-1" />
-                    源码
-                  </Button>
-                )}
-                {project.demoUrl && (
-                  <Button variant="ghost" size="sm" className="h-8 px-2">
-                    <ExternalLink className="h-4 w-4 mr-1" />
-                    演示
-                  </Button>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {displayedProjects.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">暂无项目展示</p>
+      {displayedProjects.length === 0 ? (
+        <Card>
+          <CardContent className="py-12 text-center">
+            <p className="text-muted-foreground mb-4">
+              {projects.length === 0 ? "暂无项目" : "暂无公开项目"}
+            </p>
+            <Link href="/settings/projects">
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                添加项目
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {displayedProjects.map((project) => (
+            <Card
+              key={project.id}
+              className="cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => setSelectedProject(project)}
+            >
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <CardTitle className="text-xl">{project.title}</CardTitle>
+                  {!project.isPublic && (
+                    <Badge variant="outline" className="flex items-center gap-1">
+                      <EyeOff className="h-3 w-3" />
+                      私密
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-sm text-muted-foreground">{project.period}</p>
+              </CardHeader>
+              <CardContent>
+                <p className="mb-4 line-clamp-3">{project.description}</p>
+                <div className="flex flex-wrap gap-2">
+                  {project.tags.map((tag) => (
+                    <Badge key={tag} variant="outline" className="text-xs">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+                <div className="flex gap-2 mt-4">
+                  {project.githubUrl && (
+                    <Button variant="ghost" size="sm" className="h-8 px-2" asChild>
+                      <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
+                        <Github className="h-4 w-4 mr-1" />
+                        源码
+                      </a>
+                    </Button>
+                  )}
+                  {project.demoUrl && (
+                    <Button variant="ghost" size="sm" className="h-8 px-2" asChild>
+                      <a href={project.demoUrl} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="h-4 w-4 mr-1" />
+                        演示
+                      </a>
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       )}
     </div>

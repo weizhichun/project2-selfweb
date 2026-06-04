@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react';
 import { Note, Category, Tag, NoteRelation, KnowledgeExport } from '@/types/knowledge';
 import { Button } from '@/components/ui/button';
-import { Upload, Download, FileText, FileJson, FileText as FileMarkdown } from 'lucide-react';
+import { Upload, FileJson, FileText, FileText as FileMarkdown } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -17,7 +17,7 @@ interface ImportExportProps {
   onImport: (data: KnowledgeExport) => Promise<void>;
 }
 
-export function ImportExport({ notes, categories, tags, relations, onExport, onImport }: ImportExportProps) {
+export function ImportExport({ notes, categories, onExport, onImport }: ImportExportProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isImporting, setIsImporting] = useState(false);
 
@@ -132,7 +132,7 @@ export function ImportExport({ notes, categories, tags, relations, onExport, onI
         const data = JSON.parse(event.target?.result as string);
         await onImport(data);
         alert('导入成功！');
-      } catch (error) {
+      } catch {
         alert('导入失败，请检查文件格式');
       } finally {
         setIsImporting(false);

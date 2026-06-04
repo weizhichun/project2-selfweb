@@ -26,7 +26,7 @@ const PROVIDER_INFO: Record<AIProvider, { name: string; icon: string; descriptio
 };
 
 export default function AIConfigPage() {
-  const { config, isLoaded, saveConfig, resetConfig, clearConfig, initConfig, defaultConfigs } = useAIConfig();
+  const { config, isLoaded, saveConfig, resetConfig, clearConfig, initConfig } = useAIConfig();
   const [formData, setFormData] = useState<AIConfig | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);

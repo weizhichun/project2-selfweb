@@ -87,7 +87,7 @@ export default function NoteAssistantPage() {
                     key={f.value}
                     variant={format === f.value ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => setFormat(f.value as any)}
+                    onClick={() => setFormat(f.value as 'outline' | 'markdown' | 'summary')}
                   >
                     {f.label}
                   </Button>

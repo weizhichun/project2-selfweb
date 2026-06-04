@@ -234,7 +234,7 @@ export function NoteManager({
                 <label className="block text-sm font-medium mb-1">学习状态</label>
                 <select
                   value={learningStatus}
-                  onChange={(e) => setLearningStatus(e.target.value as any)}
+                  onChange={(e) => setLearningStatus(e.target.value as 'not-started' | 'learning' | 'completed')}
                   className="w-full px-3 py-2 border rounded-lg"
                 >
                   <option value="not-started">未开始</option>

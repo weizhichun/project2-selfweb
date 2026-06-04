@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Sparkles, FileText, Database, Briefcase, UserCheck, Settings } from 'lucide-react';
 import { useAIConfig } from '@/hooks/use-ai-config';
 
